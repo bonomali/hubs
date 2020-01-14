@@ -32,7 +32,7 @@ const fetchContentType = url => {
   return fetch(url, { method: "HEAD" }).then(r => r.headers.get("content-type"));
 };
 
-const batchMeshes = qsTruthy("batchMeshes");
+const forceMeshBatching = qsTruthy("batchMeshes");
 const disableBatching = qsTruthy("disableBatching");
 
 AFRAME.registerComponent("media-loader", {
@@ -438,7 +438,9 @@ AFRAME.registerComponent("media-loader", {
           { once: true }
         );
         this.el.addEventListener("model-error", this.onError, { once: true });
-        let batch = !disableBatching && batchMeshes;
+        let batch =
+          !disableBatching &&
+          (forceMeshBatching || (AFRAME.utils.device.isMobile() && window.APP && window.APP.quality === "low"));
         if (this.data.mediaOptions.hasOwnProperty("batch") && !this.data.mediaOptions.batch) {
           batch = false;
         }
